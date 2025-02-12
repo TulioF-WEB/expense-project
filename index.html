@@ -109,10 +109,32 @@
     </div>
 
     <script>
+        // Load expenses from local storage
+        function loadExpenses() {
+            const storedExpenses = localStorage.getItem('expenses');
+            if (storedExpenses) {
+                expenses = JSON.parse(storedExpenses).map(expense => ({
+                    ...expense,
+                    date: new Date(expense.date)
+                }));
+                displayExpenses();
+                updateCategoryChart();
+                updateMonthChart();
+            }
+        }
+
+        // Save expenses to local storage
+        function saveExpenses() {
+            localStorage.setItem('expenses', JSON.stringify(expenses));
+        }
+
         let expenses = [];
         let editingIndex = -1;
         let expenseCategoryChart = null;
         let expenseMonthChart = null;
+
+        // Load expenses when the page loads
+        loadExpenses();
 
         // Listen for form submission
         document.getElementById('expenseForm').addEventListener('submit', function (e) {
@@ -135,6 +157,7 @@
             displayExpenses();
             updateCategoryChart();
             updateMonthChart();
+            saveExpenses();
             resetForm();
         });
 
@@ -185,6 +208,7 @@
             const date = document.getElementById('editDate').value;
             const description = document.getElementById('editDescription').value;
 
+            saveExpenses();
             expenses[index] = {
                 amount: parseFloat(amount),
                 category: category,
@@ -199,6 +223,7 @@
 
         // Delete expense functionality
         function deleteExpense(index) {
+            saveExpenses();
             expenses.splice(index, 1);
             displayExpenses();
             updateCategoryChart();
@@ -314,6 +339,8 @@
                 }
             });
         }
+
+
     </script>
 
     <!-- Bootstrap 5 JS -->
